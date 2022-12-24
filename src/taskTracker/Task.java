@@ -1,5 +1,7 @@
 package taskTracker;
 
+import java.util.Objects;
+
 public abstract class Task {
     private String name;
     private Integer id;
@@ -44,6 +46,28 @@ public abstract class Task {
         this.status = status;
     }
 
+    @Override
+    public String toString() {
+        return "Task{" +
+                "name='" + name + '\'' +
+                ", id=" + id +
+                ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return name.equals(task.name) && Objects.equals(id, task.id) && description.equals(task.description) && status.equals(task.status);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, id, description, status);
+    }
 }
 
 
