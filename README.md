@@ -38,7 +38,7 @@ createTask(taskTracker.Task task)    //  Общий метод для 2х мас
 
 updateTask(taskTracker.Task task)    // Обновляет статус задачи
 
-deleteById(int id)    // Удаляет епики и сабтаски по id
+deleteAllById(int id), deleteEpicById(int id), deleteSubtaskById(int id)   // Удаляет епики и сабтаски по id
 
 getAllSubtaskEpic(taskTracker.Epic epic)    //Выводит все сабтаски заданного епика
 ```
