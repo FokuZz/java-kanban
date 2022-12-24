@@ -1,18 +1,18 @@
 # Это репозиторий технического задания "Трекер задач"
 
 ---
-## Класс родитель "Task"
+## Класс родитель "taskTracker.Task"
 Чтобы небыло необходимости создавать метод для каждого класса, мы создали абстрактный класс родитель, где в будущем
 необходимые методы можно было бы переопределить, либо использовать интерфейс.
 ```
-public abstract class Task {
+public abstract class taskTracker.Task {
     private String name;
     private Integer id;
     private String description;
     private String status = "NEW";
 
 
-    Task(String name, String description){
+    taskTracker.Task(String name, String description){
         this.name = name;
         this.description = description;
         this.id = this.hashCode();
@@ -23,7 +23,7 @@ public abstract class Task {
 От него у нас будет создан классы наследователи __Epic__ и __Subtask__
 
 ---
-## Менеджер трекера "TaskManager"
+## Менеджер трекера "manager.taskManager.TaskManager"
 Он будет запускаться на старте программы и управлять всеми задачами.
 
 Для управления задачами используются данные публичные методы:
@@ -34,12 +34,12 @@ deleteAllTasks()    // Удаляет все задачи
 
 getById(int id)    // Выводит эпики и их сабтаски по заданному айди
 
-createTask(Task task)    //  Общий метод для 2х массивов Epics и Subtasks
+createTask(taskTracker.Task task)    //  Общий метод для 2х массивов Epics и Subtasks
 
-updateTask(Task task)    // Обновляет статус задачи
+updateTask(taskTracker.Task task)    // Обновляет статус задачи
 
 deleteById(int id)    // Удаляет епики и сабтаски по id
 
-getAllSubtaskEpic(Epic epic)    //Выводит все сабтаски заданного епика
+getAllSubtaskEpic(taskTracker.Epic epic)    //Выводит все сабтаски заданного епика
 ```
 Спасибо за просмотр реадми

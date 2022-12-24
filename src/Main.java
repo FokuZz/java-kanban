@@ -1,3 +1,7 @@
+import manager.taskManager.TaskManager;
+import taskTracker.Epic;
+import taskTracker.Subtask;
+
 public class Main {
     public static void main(String[] args) {
         Epic epic1 = new Epic("Сходить в магазин","Надо купить продуктов");
@@ -15,7 +19,7 @@ public class Main {
         manager.getAllTasks();
         manager.updateTask(subtask3);
         manager.updateTask(epic2);
-        manager.deleteById(0);
+        manager.deleteAllById(0);
         manager.createTask(epic1);
         manager.createTask(subtask1);
         manager.createTask(subtask2);

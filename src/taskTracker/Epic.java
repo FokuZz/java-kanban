@@ -1,12 +1,14 @@
+package taskTracker;
+
 public class Epic extends Task{
     private int epicId;
     private int amountSubtasks;
-    Epic(String name, String description) { super(name, description); }
+    public Epic(String name, String description) { super(name, description); }
 
 
     @Override
     public String toString() {
-        return "Epic{" +
+        return "taskTracker.Epic{" +
                 "name='" + this.getName() + '\'' +
                 ", description='" + this.getDescription() + '\'' +
                 ", epicId=" + epicId +

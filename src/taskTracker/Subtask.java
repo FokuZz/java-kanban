@@ -1,11 +1,13 @@
+package taskTracker;
+
 public class Subtask extends Task{
     private int subTaskId;
 
-    Subtask(String name, String description) {
+    public Subtask(String name, String description) {
         super(name, description);
     }
 
-    Subtask(String name, String description, String status) {
+    public Subtask(String name, String description, String status) {
         super(name, description);
         setStatus(status);
     }

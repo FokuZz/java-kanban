@@ -1,4 +1,9 @@
+package manager.taskManager;
+
 import org.jetbrains.annotations.NotNull;
+import taskTracker.Epic;
+import taskTracker.Subtask;
+import taskTracker.Task;
 
 import java.util.ArrayList;
 
@@ -89,7 +94,26 @@ public class TaskManager {
         }
         return task;
     }
-    public void deleteById(int id) {    // Удаляет епики и сабтаски по id
+    public void deleteSubtaskById(int id) {
+        ArrayList<Subtask> subtaskTwin = new ArrayList<>();
+        for (Subtask subtask: subtasks){
+            if(subtask.getId()!=id){
+                subtaskTwin.add(subtask);
+            }
+        }
+        subtasks = subtaskTwin;
+    }
+    public void deleteEpicById(int id) {
+        ArrayList<Epic> epicTwin = new ArrayList<>();
+        for (Epic epic: epics){
+            if (epic.getId()!=id){
+                epicTwin.add(epic);
+            }
+        }
+        epics = epicTwin;
+
+    }
+    public void deleteAllById(int id) {
         ArrayList<Epic> epicTwin = new ArrayList<>();
         ArrayList<Subtask> subtaskTwin = new ArrayList<>();
         for (Epic epic: epics){
