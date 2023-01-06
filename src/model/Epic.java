@@ -1,4 +1,4 @@
-package taskTracker;
+package model;
 
 public class Epic extends Task{
     private int epicId;
@@ -8,23 +8,21 @@ public class Epic extends Task{
 
     @Override
     public String toString() {
-        return "taskTracker.Epic{" +
+        return "Epic{" +
                 "name='" + this.getName() + '\'' +
                 ", description='" + this.getDescription() + '\'' +
                 ", epicId=" + epicId +
+                ", id=" + getSuperId() +
                 ", amountSubtasks=" + amountSubtasks +
                 ", status='" + this.getStatus() + '\'' +
                 '}';
     }
 
-    @Override
-    public void setId(int id) {
-        super.setId(id);
+    public void setEpicId(int id) {
         this.epicId = id;
     }
 
-    @Override
-    public int getId() {
+    public int getEpicId() {
         return epicId;
     }
 

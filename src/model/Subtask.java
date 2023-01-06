@@ -1,4 +1,4 @@
-package taskTracker;
+package model;
 
 public class Subtask extends Task{
     private int subTaskId;
@@ -7,7 +7,7 @@ public class Subtask extends Task{
         super(name, description);
     }
 
-    public Subtask(String name, String description, String status) {
+    public Subtask(String name, String description, StatusTask status) {
         super(name, description);
         setStatus(status);
     }
@@ -18,18 +18,16 @@ public class Subtask extends Task{
                 "name='" + this.getName() + '\'' +
                 ", description='" + this.getDescription() + '\'' +
                 ", subTaskId=" + subTaskId +
+                ", id=" + getSuperId() +
                 ", status='" + this.getStatus() + '\'' +
                 '}';
     }
 
-    @Override
-    public void setId(int id) {
-        super.setId(id);
+    public void setSubtaskId(int id) {
         this.subTaskId = id;
     }
 
-    @Override
-    public int getId() {
+    public int getSubtaskId() {
         return subTaskId;
     }
 }

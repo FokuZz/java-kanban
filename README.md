@@ -1,18 +1,18 @@
 # Это репозиторий технического задания "Трекер задач"
 
 ---
-## Класс родитель "taskTracker.Task"
+## Класс родитель "Task"
 Чтобы небыло необходимости создавать метод для каждого класса, мы создали абстрактный класс родитель, где в будущем
 необходимые методы можно было бы переопределить, либо использовать интерфейс.
 ```
-public abstract class taskTracker.Task {
+public abstract class model.Task {
     private String name;
     private Integer id;
     private String description;
     private String status = "NEW";
 
 
-    taskTracker.Task(String name, String description){
+    model.Task(String name, String description){
         this.name = name;
         this.description = description;
         this.id = this.hashCode();
@@ -23,7 +23,7 @@ public abstract class taskTracker.Task {
 От него у нас будет создан классы наследователи __Epic__ и __Subtask__
 
 ---
-## Менеджер трекера "manager.taskManager.TaskManager"
+## Менеджер трекера "InMemoryTaskManager"
 Он будет запускаться на старте программы и управлять всеми задачами.
 
 Для управления задачами используются данные публичные методы:
@@ -34,12 +34,22 @@ deleteAllTasks()    // Удаляет все задачи
 
 getById(int id)    // Выводит эпики и их сабтаски по заданному айди
 
-createTask(taskTracker.Task task)    //  Общий метод для 2х массивов Epics и Subtasks
+createTask(model.Task task)    //  Общий метод для 2х массивов Epics и Subtasks
 
-updateTask(taskTracker.Task task)    // Обновляет статус задачи
+updateTask(model.Task task)    // Обновляет статус задачи
 
 deleteAllById(int id), deleteEpicById(int id), deleteSubtaskById(int id)   // Удаляет епики и сабтаски по id
 
-getAllSubtaskEpic(taskTracker.Epic epic)    //Выводит все сабтаски заданного епика
+getAllSubtaskEpic(model.Epic epic)    //Выводит все сабтаски заданного епика
+```
+## Менеджер истории "InMemoryHistoryManager"
+Он будет запускаться на старте программы и управлять всеми задачами.
+
+Для управления задачами используются данные публичные методы:
+```
+add(Task task)    // Добавляет в список просмотренный класс
+
+getHistory()    // Возвращает список истории 
+
 ```
 Спасибо за просмотр реадми

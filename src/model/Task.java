@@ -1,21 +1,25 @@
-package taskTracker;
+package model;
 
 import java.util.Objects;
 
 public abstract class Task {
+    private static int sumTasks;
     private String name;
     private Integer id;
     private String description;
-    private String status = "NEW";
+    private StatusTask status = StatusTask.NEW;
 
 
     Task(String name, String description){
         this.name = name;
         this.description = description;
-        this.id = this.hashCode();
+        sumTasks++;
+        this.id = sumTasks-1;
+
     }
-    public void setId(int id) {
-        this.id = id;
+
+    public Integer getSuperId(){
+        return id;
     }
 
     public String getName() {
@@ -26,10 +30,6 @@ public abstract class Task {
         this.name = name;
     }
 
-    public int getId() {
-        return id;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -38,11 +38,11 @@ public abstract class Task {
         this.description = description;
     }
 
-    public String getStatus() {
+    public StatusTask getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(StatusTask status) {
         this.status = status;
     }
 
