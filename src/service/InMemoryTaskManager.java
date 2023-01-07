@@ -1,5 +1,6 @@
-package model;
+package service;
 
+import model.*;
 import service.HistoryManager;
 import service.TaskManager;
 import org.jetbrains.annotations.NotNull;
