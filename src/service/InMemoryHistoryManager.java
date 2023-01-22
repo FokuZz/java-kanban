@@ -7,38 +7,38 @@ import service.HistoryManager;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private CustomLinkedList<Task> historyLinkedList = new CustomLinkedList<>();
+    private final CustomLinkedList<Task> history = new CustomLinkedList<>();
 
     @Override
     public void add(Task task) {
-        historyLinkedList.linkLast(task);
+        history.linkLast(task);
     }
 
     @Override
     public void remove(Task task){
-        historyLinkedList.remove(task);
+        history.remove(task);
     }
 
     @Override
     public ArrayList<Task> getHistory() {
-        return historyLinkedList.getTasks();
+        return history.getTasks();
     }
 }
 class CustomLinkedList<T extends Task>{ ///////////////////////////////////////////// Свой LinkedList c быстрым находдением через HashMap
-    Map<Integer,T> historyMap = new HashMap<>();
-    Node<T> first;
-    Node<T> last;
-    int size = 0;
+    private final Map<Integer,T> history = new HashMap<>();
+    private Node<T> first;
+    private Node<T> last;
+    private int size = 0;
 
     public void linkLast(T task){
-        if (historyMap.containsKey(task.getSuperId())){
+        if (history.containsKey(task.getSuperId())){
             for (Node<T> x = last; x != null; x = x.prev) {
                 if (task.equals(x.elem)) {
                     removeNode(x);
                 }
             }
         } else {
-            historyMap.put(task.getSuperId(),task);
+            history.put(task.getSuperId(),task);
         }
         final Node<T> l = last;
         final Node<T> newNode = new Node<T>(l,task,null);
@@ -59,7 +59,7 @@ class CustomLinkedList<T extends Task>{ ////////////////////////////////////////
     }
 
     public void remove(T o){
-        if(!historyMap.containsKey(o.getSuperId())) return;
+        if(!history.containsKey(o.getSuperId())) return;
         if (o == null) {
             for (Node<T> x = first; x != null; x = x.next) {
                 if (x.elem == null) {
@@ -73,7 +73,7 @@ class CustomLinkedList<T extends Task>{ ////////////////////////////////////////
                 }
             }
         }
-        historyMap.remove(o);
+        history.remove(o);
     }
 
     private T removeNode(Node<T> x) {
