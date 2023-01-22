@@ -18,9 +18,9 @@ public interface TaskManager {
 
     void deleteSubtaskById(int id);
 
-    void deleteEpicById(int id);
+    void deleteEpicById(int epicId);
 
-    void deleteAllById(int id);
+    void deleteEpicOrSubtask(int id);
 
     void getAllSubtaskEpic(@NotNull Epic epic);
 
@@ -31,4 +31,6 @@ public interface TaskManager {
     Epic getEpic(int id);
 
     void getHistory();
+
+    void removeHistory(int superId);
 }
