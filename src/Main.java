@@ -8,7 +8,7 @@ public class Main {
         Subtask subtask2 = new Subtask("Купить яица","Стоимость 100 рублей", StatusTask.DONE);
         Epic epic2 = new Epic("Сделать омлет", "Надо приготовить омлет из продкутов");
         Subtask subtask3 = new Subtask("Купить продукты для омлета", "Надо 180р. чтобы сделать омлет");
-        TaskManager manager = Managers.getDefault();
+        TaskManager manager = Managers.getFile();
 
         manager.createTask(epic1);
         manager.createTask(subtask1);
@@ -48,7 +48,6 @@ public class Main {
 
         manager.getHistory();
         System.out.println("После удаления id 4 & 3^\n");
-        manager.deleteEpicById(0);
         manager.getHistory();
         System.out.println("\nПосле удаления эпика\n");
         manager.getAllTasks();

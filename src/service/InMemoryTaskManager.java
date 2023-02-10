@@ -243,4 +243,17 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
     }
+
+    public ArrayList<Epic> getEpics() {
+        return epics;
+    }
+
+    public ArrayList<Subtask> getSubtasks() {
+        return subtasks;
+    }
+
+    public ArrayList<Task> getHistoryManager(){
+        ArrayList<Task> history = (ArrayList<Task>) historyManager.getHistory();
+        return history;
+    }
 }
