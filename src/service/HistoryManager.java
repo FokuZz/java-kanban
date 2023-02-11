@@ -1,6 +1,8 @@
 package service;
 
 import model.Task;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public interface HistoryManager {
@@ -9,4 +11,6 @@ public interface HistoryManager {
     void remove(Task task);
 
     List<Task> getHistory();
+
+    void setHistory(ArrayList<Task> historyManager);
 }

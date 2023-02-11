@@ -1,5 +1,6 @@
 package service;
 
+import model.Epic;
 import model.Node;
 import model.Task;
 import service.HistoryManager;
@@ -7,7 +8,7 @@ import service.HistoryManager;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private final CustomLinkedList<Task> history = new CustomLinkedList<>();
+    private CustomLinkedList<Task> history = new CustomLinkedList<>();
 
     @Override
     public void add(Task task) {
@@ -17,6 +18,14 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void remove(Task task){
         history.remove(task);
+    }
+
+    public void setHistory(ArrayList<Task> history) {
+        CustomLinkedList<Task> testHistory = new CustomLinkedList<>();
+        for(Task task: history){
+            testHistory.linkLast(task);
+        }
+        this.history = testHistory;
     }
 
     @Override

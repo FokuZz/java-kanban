@@ -12,6 +12,21 @@ public class InMemoryTaskManager implements TaskManager {
     private final HistoryManager historyManager = Managers.getDefaultHistory();
     private int counter = 0;
 
+    public void setEpics(ArrayList<Epic> epics) {
+        this.epics = epics;
+    }
+
+    public void setSubtasks(ArrayList<Subtask> subtasks) {
+        this.subtasks = subtasks;
+    }
+
+    public void setCounter(int counter) {
+        this.counter = counter;
+    }
+    public void setHistoryManager(ArrayList<Task> historyManager) {
+        this.historyManager.setHistory(historyManager);
+    }
+
     private void hrPrintln() {           //Быстрое создание линий на вывод
         System.out.println("---------------------------------");
     }
@@ -255,5 +270,9 @@ public class InMemoryTaskManager implements TaskManager {
     public ArrayList<Task> getHistoryManager(){
         ArrayList<Task> history = (ArrayList<Task>) historyManager.getHistory();
         return history;
+    }
+
+    protected int getCounter() {
+        return this.counter;
     }
 }
