@@ -6,14 +6,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import model.*;
 import org.jetbrains.annotations.NotNull;
 
 public class FileBackedTasksManager extends InMemoryTaskManager{
-    public FileBackedTasksManager(){
 
-    }
     private FileBackedTasksManager(ArrayList<Epic> epics, ArrayList<Subtask> subtasks, int count, ArrayList<Task> history){
         setEpics(epics);
         setSubtasks(subtasks);
@@ -70,18 +69,23 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         manager.getAllTasks();
     }
     static Path fileName = Paths.get("FileTaskManager.CSV");
-    private void save(){
-        char comma = ',';
-        boolean firstTry = false;
+
+    private void createFile() throws ManagerSaveException {
         if(!Files.exists(fileName)){
             try {
                 Files.createFile(fileName);
-            } catch (ManagerSaveException e) {
-                e.getStackTrace();
             } catch (IOException e) { // Не понимаю в чём тут проблема, хоть и ManagerSaveException наследует IOEx. но
                 // пограмма не хочет работать без этого исключение, как я понял какой-то контракт
-                throw new RuntimeException(e);
+                throw new ManagerSaveException("Возникла ошибка при сохранении менеджера\n" + Arrays.toString(e.getStackTrace()));
             }
+        }
+    }
+    private void save(){
+        char comma = ',';
+        try {
+            createFile();
+        } catch (ManagerSaveException e) {
+            e.getStackTrace();
         }
 
         try(BufferedWriter bw = new BufferedWriter(new FileWriter(fileName.toFile(), StandardCharsets.UTF_8))){
@@ -111,8 +115,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
             }
 
         }
-        }catch (ManagerSaveException exp){
-            exp.getStackTrace();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
