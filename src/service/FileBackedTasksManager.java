@@ -12,7 +12,7 @@ import model.*;
 import org.jetbrains.annotations.NotNull;
 
 public class FileBackedTasksManager extends InMemoryTaskManager{
-
+    public FileBackedTasksManager(){};//Он мне нужен для создания класса без файла, без него будет только один конструктор
     private FileBackedTasksManager(ArrayList<Epic> epics, ArrayList<Subtask> subtasks, int count, ArrayList<Task> history){
         setEpics(epics);
         setSubtasks(subtasks);
@@ -78,8 +78,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         if(!Files.exists(fileName)){
             try {
                 Files.createFile(fileName);
-            } catch (IOException e) { // Не понимаю в чём тут проблема, хоть и ManagerSaveException наследует IOEx. но
-                // пограмма не хочет работать без этого исключение, как я понял какой-то контракт
+            } catch (IOException e) {
                 throw new ManagerSaveException("Возникла ошибка при сохранении менеджера\n" + Arrays.toString(e.getStackTrace()));
             }
         }
@@ -135,6 +134,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         ArrayList<Task> history = new ArrayList<>();
         int counter = 0;
         try(BufferedReader br = new BufferedReader (new FileReader(fileName.toFile()))) {
+            if(!br.ready()) return new FileBackedTasksManager();
             br.readLine();
             String s = br.readLine();
             if(s.length() == 0){
@@ -150,17 +150,17 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
                 if (array[0].length() > 2) {
                     if (array[0].equals("Epic")) {
                         epics.add(new Epic(array[1], array[2]));
-                        epics.get(epics.size()-1).setEpicId(Integer.parseInt(array[4]));
+                        epics.get(epics.size()-1).setEpicId(Integer.parseInt(array[3]));
                         counter++;
                         switch (array[5]) { // Быстрая проверка и конвертация из String в Enum
                             case ("NEW"):
                                 epics.get(epics.size()-1).setStatus(StatusTask.NEW);
                                 break;
-                            case ("IN_PROGRESS"):
-                                epics.get(epics.size()-1).setStatus(StatusTask.IN_PROGRESS);
-                                break;
                             case ("DONE"):
                                 epics.get(epics.size()-1).setStatus(StatusTask.DONE);
+                                break;
+                            case ("IN_PROGRESS"):
+                                epics.get(epics.size()-1).setStatus(StatusTask.IN_PROGRESS);
                                 break;
                         }
                     } else {
@@ -191,11 +191,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
                     for (Task task : epics){
                         if(task.getSuperId() == j){
                             history.add(task);
+                            break;
                         }
                     }
                     for (Task task : subtasks){
                         if(task.getSuperId() == j){
                             history.add(task);
+                            break;
                         }
                     }
 

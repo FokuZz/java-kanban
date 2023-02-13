@@ -114,7 +114,12 @@ public class InMemoryTaskManager implements TaskManager {
             int countSub = 0; // Id эпика, от него будет создаваться новая группа сабтаск
             for (Subtask subtask : subtasks) {
                 for(int i = 0; i < epics.size() ; i++){
-                    if(task.isTaskCopy(epics.get(i))) epicInt = i;
+                    if(task.isTaskCopy(epics.get(i))) {
+                        epicInt = i;
+                        if(task.isTaskCopy(epics.get(epicInt))){
+                            return epics.get(epicInt);
+                        }
+                    }
                 }
                 boolean sameId = ((Epic) task).getEpicId() == subtask.getSubtaskId();
 
