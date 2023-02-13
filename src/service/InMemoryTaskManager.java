@@ -80,7 +80,19 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createTask(@NotNull Task task) {            //  Общий метод для 2х массивов Epics и Subtasks
+    public void createTask(@NotNull Task task) {
+        if(task.getClass().equals(Epic.class)){
+            for(Epic epic:epics){
+                if(task.isTaskCopy(epic)) return;
+            }
+        } else {
+            for(Subtask subtask: subtasks){
+                if(task.isTaskCopy(subtask)) return;
+            }
+        }
+
+
+                    //  Общий метод для 2х массивов Epics и Subtasks
         if (epics.contains(task) || subtasks.contains(task)) {
             System.out.println("Создания не произолшо, такая задача уже существует\n");
             return;
@@ -98,26 +110,30 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task updateTask(@NotNull Task task) {           // Обновляет статус задачи
         if (task.getClass().equals(Epic.class)) {
-            int countSub = 0;
+            int epicInt = -1;
+            int countSub = 0; // Id эпика, от него будет создаваться новая группа сабтаск
             for (Subtask subtask : subtasks) {
+                for(int i = 0; i < epics.size() ; i++){
+                    if(task.isTaskCopy(epics.get(i))) epicInt = i;
+                }
                 boolean sameId = ((Epic) task).getEpicId() == subtask.getSubtaskId();
 
-                if (sameId && subtask.getStatus().equals(StatusTask.NEW)) {
-                    subtask.setStatus(StatusTask.IN_PROGRESS);
-                    epics.get(epics.indexOf(task)).addAmountSubtasks();
-                    countSub++;
+                if (sameId && subtask.getStatus().equals(StatusTask.NEW)) {//Минусует при обнаружении стандартного
+                    subtask.setStatus(StatusTask.IN_PROGRESS); //статуса, если в подэпиках будет хоть один !Done тогда
+                    epics.get(epicInt).addAmountSubtasks(); // число countSub не будет равно общему кол.ву
+                    countSub++;                                        // сабтаск, из-за чего будет только In_progress
                 } else if (sameId && subtask.getStatus().equals(StatusTask.DONE)) {
-                    epics.get(epics.indexOf(task)).addAmountSubtasks();
+                    epics.get(epicInt).addAmountSubtasks();
                     countSub--;
                 }
             }
-            if (countSub != 0) epics.get(epics.indexOf(task)).setStatus(StatusTask.IN_PROGRESS);
+            if (countSub != 0) epics.get(epicInt).setStatus(StatusTask.IN_PROGRESS);
             if (countSub < 0) {
-                if (Math.abs(countSub) == epics.get(epics.indexOf(task)).getAmountSubtasks()) {
-                    epics.get(epics.indexOf(task)).setStatus(StatusTask.DONE);
+                if (Math.abs(countSub) == epics.get(epicInt).getAmountSubtasks()) {
+                    epics.get(epicInt).setStatus(StatusTask.DONE);
                 }
             }
-            return task = epics.get(epics.indexOf(task));
+            return task = epics.get(epicInt);
         } else if (task.getClass().equals(Subtask.class) && !epics.isEmpty()) {
             if (task.getStatus().equals(StatusTask.NEW)) task.setStatus(StatusTask.IN_PROGRESS);
         }
@@ -275,4 +291,5 @@ public class InMemoryTaskManager implements TaskManager {
     protected int getCounter() {
         return this.counter;
     }
+    
 }

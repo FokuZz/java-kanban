@@ -13,8 +13,7 @@ public abstract class Task {
     Task(String name, String description){
         this.name = name;
         this.description = description;
-        sumTasks++;
-        this.id = sumTasks-1;
+        this.id = sumTasks++;
 
     }
 
@@ -67,6 +66,13 @@ public abstract class Task {
     @Override
     public int hashCode() {
         return Objects.hash(name, id, description, status);
+    }
+
+    public boolean isTaskCopy(Task task){
+        if(this.getName().equals(task.getName()) && this.getDescription().equals(task.getDescription())){
+            return true;
+        }
+        return false;
     }
 }
 
