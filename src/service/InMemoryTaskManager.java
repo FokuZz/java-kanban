@@ -12,6 +12,8 @@ public class InMemoryTaskManager implements TaskManager {
     private final HistoryManager historyManager = Managers.getDefaultHistory();
     private int counter = 0;
 
+    private boolean exception = false;
+
     public void setEpics(ArrayList<Epic> epics) {
         this.epics = epics;
     }
@@ -32,25 +34,28 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void getAllTasks() {          // Выводит эпики и их сабтаски если у них один айди
-
+    public ArrayList<Task> getAllTasks() {          // Выводит эпики и их сабтаски если у них один айди
+        ArrayList<Task> allTasks = new ArrayList<>();
 
         if (epics.isEmpty()) {
             System.out.println("Нет задач\n");
-            return;
+            return null;
         }
         System.out.println("Начало списка вывода всех задач");
         for (Epic epic : epics) {
             hrPrintln();
             System.out.println(epic);
+            allTasks.add(epic);
             for (Subtask subtask : subtasks) {
                 if (epic.getEpicId() == subtask.getSubtaskId()) {
                     System.out.println(subtask);
+                    allTasks.add(subtask);
                 }
             }
         }
         hrPrintln();
         System.out.println("Конец списка вывода всех задач\n");
+        return allTasks;
     }
 
     @Override
@@ -61,29 +66,36 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void getById(int id) {         // Выводит эпики и их сабтаски по заданному айди
-
+    public ArrayList<Task> getById(int id) {         // Выводит эпики и их сабтаски по заданному айди
+        ArrayList<Task> allTasks = new ArrayList<>();
         System.out.println("Начало списка поиска по ID");
         for (Epic epic : epics) {
             if (id == epic.getEpicId()) {
                 hrPrintln();
+                allTasks.add(epic);
                 System.out.println(epic);
                 for (Subtask subtask : subtasks) {
                     if (epic.getEpicId() == subtask.getSubtaskId()) {
                         System.out.println(subtask);
+                        allTasks.add(subtask);
                     }
                 }
                 hrPrintln();
             }
         }
         System.out.println("Конец списка поиска по ID\n");
+        return allTasks;
     }
 
     @Override
-    public void createTask(@NotNull Task task) {
+    public void createTask(@NotNull Task task){
         if(task.getClass().equals(Epic.class)){
             for(Epic epic:epics){
                 if(task.isTaskCopy(epic)) return;
+                if (((Epic) task).isTaskCopyTime(epic)){
+                    exception = true;
+                    return;
+                }
             }
         } else {
             for(Subtask subtask: subtasks){
@@ -112,32 +124,45 @@ public class InMemoryTaskManager implements TaskManager {
         if (task.getClass().equals(Epic.class)) {
             int epicInt = -1;
             int countSub = 0; // Id эпика, от него будет создаваться новая группа сабтаск
-            for (Subtask subtask : subtasks) {
+            if(!subtasks.isEmpty()){
+                for (Subtask subtask : subtasks) {
+                    for(int i = 0; i < epics.size() ; i++){
+                        if(task.isTaskCopy(epics.get(i))) {
+                            epicInt = i;
+                            if(task.isTaskCopy(epics.get(epicInt))){
+                                break;
+                            }
+                        }
+                    }
+                    boolean sameId = ((Epic) task).getEpicId() == subtask.getSubtaskId();
+
+                    if (sameId && subtask.getStatus().equals(StatusTask.NEW)) {//Минусует при обнаружении стандартного
+                        subtask.setStatus(StatusTask.IN_PROGRESS); //статуса, если в подэпиках будет хоть один !Done тогда
+                        epics.get(epicInt).addAmountSubtasks(); // число countSub не будет равно общему кол.ву
+                        countSub++;                                        // сабтаск, из-за чего будет только In_progress
+                    } else if (sameId && subtask.getStatus().equals(StatusTask.DONE)) {
+                        epics.get(epicInt).addAmountSubtasks();
+                        countSub--;
+                    }
+                }
+            } else {
                 for(int i = 0; i < epics.size() ; i++){
                     if(task.isTaskCopy(epics.get(i))) {
                         epicInt = i;
                         if(task.isTaskCopy(epics.get(epicInt))){
-                            return epics.get(epicInt);
+                            break;
                         }
                     }
                 }
-                boolean sameId = ((Epic) task).getEpicId() == subtask.getSubtaskId();
-
-                if (sameId && subtask.getStatus().equals(StatusTask.NEW)) {//Минусует при обнаружении стандартного
-                    subtask.setStatus(StatusTask.IN_PROGRESS); //статуса, если в подэпиках будет хоть один !Done тогда
-                    epics.get(epicInt).addAmountSubtasks(); // число countSub не будет равно общему кол.ву
-                    countSub++;                                        // сабтаск, из-за чего будет только In_progress
-                } else if (sameId && subtask.getStatus().equals(StatusTask.DONE)) {
-                    epics.get(epicInt).addAmountSubtasks();
-                    countSub--;
-                }
             }
+
             if (countSub != 0) epics.get(epicInt).setStatus(StatusTask.IN_PROGRESS);
             if (countSub < 0) {
                 if (Math.abs(countSub) == epics.get(epicInt).getAmountSubtasks()) {
                     epics.get(epicInt).setStatus(StatusTask.DONE);
                 }
             }
+
             return task = epics.get(epicInt);
         } else if (task.getClass().equals(Subtask.class) && !epics.isEmpty()) {
             if (task.getStatus().equals(StatusTask.NEW)) task.setStatus(StatusTask.IN_PROGRESS);
@@ -197,16 +222,23 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void getAllSubtaskEpic(@NotNull Epic epic) {   //Выводит все сабтаски заданного епика
+    public ArrayList<Subtask> getAllSubtaskEpic(@NotNull Epic epic) {   //Выводит все сабтаски заданного епика
+        ArrayList<Subtask> sub = new ArrayList<>();
         System.out.println("Начало подсписков задачи " + epic.getName());
         hrPrintln();
         for (Subtask subtask : subtasks) {
             if (epic.getEpicId() == subtask.getSubtaskId()) {
                 System.out.println(subtask);
+                sub.add(subtask);
             }
+        }
+        if(sub.isEmpty()){
+            System.out.println("Ни одной подзадачи не найдено");
         }
         hrPrintln();
         System.out.println("Конец подсписков задачи " + epic.getName() + "\n");
+
+        return sub;
     }
 
     @Override

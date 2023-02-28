@@ -5,12 +5,14 @@ import model.Epic;
 import model.Subtask;
 import model.Task;
 
+import java.util.ArrayList;
+
 public interface TaskManager {
-    void getAllTasks();
+    ArrayList<Task> getAllTasks();
 
     void deleteAllTasks();
 
-    void getById(int id);
+    ArrayList<Task> getById(int id);
 
     void createTask(@NotNull Task task);
 
@@ -22,7 +24,7 @@ public interface TaskManager {
 
     void deleteEpicOrSubtask(int id);
 
-    void getAllSubtaskEpic(@NotNull Epic epic);
+    ArrayList<Subtask> getAllSubtaskEpic(@NotNull Epic epic);
 
     Task getTask(int id);
 

@@ -1,5 +1,7 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public abstract class Task {
@@ -14,8 +16,9 @@ public abstract class Task {
         this.name = name;
         this.description = description;
         this.id = sumTasks++;
-
     }
+
+
 
     public Integer getSuperId(){
         return id;
@@ -74,6 +77,8 @@ public abstract class Task {
         }
         return false;
     }
+
+
 }
 
 
