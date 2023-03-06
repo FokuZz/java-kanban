@@ -32,7 +32,8 @@ public interface TaskManager {
 
     Epic getEpic(int id);
 
-    void getHistory();
+    ArrayList<Task> getHistory();
 
     void removeHistory(int superId);
+    ArrayList<Task> getPrioritizedTasks();
 }

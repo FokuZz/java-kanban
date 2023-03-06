@@ -1,7 +1,12 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Subtask extends Task{
     private int subTaskId;
+    private LocalDateTime startTime;
+    private Duration duration;
 
     public Subtask(String name, String description) {
         super(name, description);
@@ -20,6 +25,8 @@ public class Subtask extends Task{
                 ", subTaskId=" + subTaskId +
                 ", id=" + getSuperId() +
                 ", status='" + this.getStatus() + '\'' +
+                ", startTime='" + this.getStartTime() + '\'' +
+                ", duration='" + this.getDuration() + '\'' +
                 '}';
     }
 
@@ -29,5 +36,21 @@ public class Subtask extends Task{
 
     public int getSubtaskId() {
         return subTaskId;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public Duration getDuration() {
+        return duration;
     }
 }

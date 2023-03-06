@@ -13,4 +13,6 @@ public interface HistoryManager {
     List<Task> getHistory();
 
     void setHistory(ArrayList<Task> historyManager);
+
+    ArrayList<Task> getPrioritizedHistory();
 }

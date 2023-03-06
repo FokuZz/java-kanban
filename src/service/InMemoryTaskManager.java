@@ -3,16 +3,22 @@ package service;
 import model.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private ArrayList<Epic> epics = new ArrayList<>();
     private ArrayList<Subtask> subtasks = new ArrayList<>();
 
+    private TreeSet<Task> priorityHistory = new TreeSet<>(Task::compareTime);
+
     private final HistoryManager historyManager = Managers.getDefaultHistory();
     private int counter = 0;
 
-    private boolean exception = false;
+    HashMap<LocalDateTime,Boolean> oneYearTimeTask = new HashMap<>();
+
+
 
     public void setEpics(ArrayList<Epic> epics) {
         this.epics = epics;
@@ -28,6 +34,9 @@ public class InMemoryTaskManager implements TaskManager {
     public void setHistoryManager(ArrayList<Task> historyManager) {
         this.historyManager.setHistory(historyManager);
     }
+    public void setPriorityHistory(TreeSet<Task> treeSet){
+        priorityHistory = treeSet;
+    }
 
     private void hrPrintln() {           //Быстрое создание линий на вывод
         System.out.println("---------------------------------");
@@ -42,6 +51,7 @@ public class InMemoryTaskManager implements TaskManager {
             return null;
         }
         System.out.println("Начало списка вывода всех задач");
+
         for (Epic epic : epics) {
             hrPrintln();
             System.out.println(epic);
@@ -62,6 +72,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllTasks() {          // Удаляет все задачи
         epics.clear();
         subtasks.clear();
+        counter = 0;
         System.out.println("Все задачи были удаленны!\n");
     }
 
@@ -69,33 +80,39 @@ public class InMemoryTaskManager implements TaskManager {
     public ArrayList<Task> getById(int id) {         // Выводит эпики и их сабтаски по заданному айди
         ArrayList<Task> allTasks = new ArrayList<>();
         System.out.println("Начало списка поиска по ID");
+        hrPrintln();
+
         for (Epic epic : epics) {
             if (id == epic.getEpicId()) {
-                hrPrintln();
                 allTasks.add(epic);
                 System.out.println(epic);
+            }
                 for (Subtask subtask : subtasks) {
-                    if (epic.getEpicId() == subtask.getSubtaskId()) {
-                        System.out.println(subtask);
+                    if (id == subtask.getSubtaskId()) {
                         allTasks.add(subtask);
                     }
                 }
-                hrPrintln();
-            }
+
         }
+        hrPrintln();
         System.out.println("Конец списка поиска по ID\n");
         return allTasks;
     }
 
     @Override
     public void createTask(@NotNull Task task){
+        if(oneYearTimeTask.isEmpty()){
+            for(LocalDateTime time = LocalDateTime.of(2023,1,1,0,0)
+                ; time.isBefore(LocalDateTime.of(2024,1,1,0,0))
+                    ; time = time.plusMinutes(15)){
+                oneYearTimeTask.put(time,false);
+            }
+        }
+
+
         if(task.getClass().equals(Epic.class)){
             for(Epic epic:epics){
                 if(task.isTaskCopy(epic)) return;
-                if (((Epic) task).isTaskCopyTime(epic)){
-                    exception = true;
-                    return;
-                }
             }
         } else {
             for(Subtask subtask: subtasks){
@@ -107,12 +124,31 @@ public class InMemoryTaskManager implements TaskManager {
                     //  Общий метод для 2х массивов Epics и Subtasks
         if (epics.contains(task) || subtasks.contains(task)) {
             System.out.println("Создания не произолшо, такая задача уже существует\n");
-            return;
         } else if (task.getClass().equals(Epic.class)) {
             ((Epic) task).setEpicId(counter++);
+
+            if(task.getStartTime() != null){
+                LocalDateTime time = task.getStartTime();
+                if (oneYearTimeTask.containsKey(time)) {
+                    if (oneYearTimeTask.get(time)) {
+                        System.out.println("Время выполнение задачи, пересекается с другим епиком\nСоздания не произошло \n");
+                        return;
+                    } else {
+                        while(time.isBefore(((Epic) task).getEndTime())){
+                            oneYearTimeTask.put(time,true);
+                            time = time.plusMinutes(15);
+                        }
+
+
+                    }
+                }
+            }
             epics.add((Epic) task);
         } else if (task.getClass().equals(Subtask.class) && !epics.isEmpty()) {
-            ((Subtask) task).setSubtaskId(epics.get(epics.size() - 1).getEpicId());
+            Subtask sub = ((Subtask) task);
+            sub.setSubtaskId(epics.get(epics.size() - 1).getEpicId());
+            sub.setStartTime(epics.get(epics.size() - 1).getStartTime());
+            sub.setDuration(epics.get(epics.size() - 1).getDuration());
             subtasks.add((Subtask) task);
         } else {
             System.out.println("Создания не произошло\n");
@@ -125,15 +161,20 @@ public class InMemoryTaskManager implements TaskManager {
             int epicInt = -1;
             int countSub = 0; // Id эпика, от него будет создаваться новая группа сабтаск
             if(!subtasks.isEmpty()){
-                for (Subtask subtask : subtasks) {
-                    for(int i = 0; i < epics.size() ; i++){
-                        if(task.isTaskCopy(epics.get(i))) {
-                            epicInt = i;
-                            if(task.isTaskCopy(epics.get(epicInt))){
-                                break;
-                            }
+                for(int i = 0; i < epics.size() ; i++){
+                    if(task.isTaskCopy(epics.get(i))) {
+                        epicInt = i;
+                        if(task.isTaskCopy(epics.get(epicInt))){
+                            break;
                         }
                     }
+                }
+                if (epicInt == -1){
+                    System.out.println("Такого эпика не существует\nАпдейта не произошло\n");
+                    return null;
+                }
+                for (Subtask subtask : subtasks) {
+
                     boolean sameId = ((Epic) task).getEpicId() == subtask.getSubtaskId();
 
                     if (sameId && subtask.getStatus().equals(StatusTask.NEW)) {//Минусует при обнаружении стандартного
@@ -145,7 +186,7 @@ public class InMemoryTaskManager implements TaskManager {
                         countSub--;
                     }
                 }
-            } else {
+            } else if(!epics.isEmpty()){
                 for(int i = 0; i < epics.size() ; i++){
                     if(task.isTaskCopy(epics.get(i))) {
                         epicInt = i;
@@ -154,6 +195,8 @@ public class InMemoryTaskManager implements TaskManager {
                         }
                     }
                 }
+            } else {
+                return null;
             }
 
             if (countSub != 0) epics.get(epicInt).setStatus(StatusTask.IN_PROGRESS);
@@ -178,6 +221,7 @@ public class InMemoryTaskManager implements TaskManager {
                 subtaskTwin.add(subtask);
             }
         }
+
         subtasks = subtaskTwin;
     }
 
@@ -188,15 +232,6 @@ public class InMemoryTaskManager implements TaskManager {
             if (epic.getEpicId() != epicId) {
                 epicTwin.add(epic);
 
-            } else if(epic.getAmountSubtasks()>0){
-                ArrayList<Subtask> subtasksTwin = new ArrayList<>();
-                historyManager.remove(epic);
-                for (Subtask subtask: subtasks){
-                    if (subtask.getSubtaskId() != epicId){
-                        subtasksTwin.add(subtask);
-                    }else historyManager.remove(subtask);
-                }
-                subtasks=subtasksTwin;
             }
         }
         epics = epicTwin;
@@ -210,12 +245,18 @@ public class InMemoryTaskManager implements TaskManager {
         for (Epic epic : epics) {
             if (epic.getSuperId() != superId) {
                 epicTwin.add(epic);
-            } else historyManager.remove(epic);
+            } else {
+                historyManager.remove(epic);
+                priorityHistory.remove(epic);
+            }
         }
         for (Subtask subtask : subtasks) {
             if (subtask.getSuperId() != superId) {
                 subtaskTwin.add(subtask);
-            } else historyManager.remove(subtask);
+            } else {
+                historyManager.remove(subtask);
+                priorityHistory.remove(subtask);
+            }
         }
         epics = epicTwin;
         subtasks = subtaskTwin;
@@ -247,13 +288,16 @@ public class InMemoryTaskManager implements TaskManager {
         for (Epic epic : epics) {
             if (epic.getSuperId() == id) {
                 task = epic;
+                break;
             }
         }
         for (Subtask subtask : subtasks) {
             if (subtask.getSuperId() == id) {
                 task = subtask;
+                break;
             }
         }
+
         if (task == null) {
             System.out.println("Данный ID = " + id + " не найден\nВозвращаю пустую задачу\n");
             return null;
@@ -285,15 +329,22 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void getHistory() {
+    public ArrayList<Task> getHistory() {
+        ArrayList<Task> history = new ArrayList<>();
         ArrayList<Task> historyList = (ArrayList<Task>) historyManager.getHistory();
+        if(historyList.isEmpty()){
+            System.out.println("История пустая, возвращаю пустое число");
+            return null;
+        }
         System.out.println("Начало списка истории");
         hrPrintln();
         for (Task task : historyList) {
             System.out.println(task);
+            history.add(task);
         }
         hrPrintln();
         System.out.println("Конец списка истории\n");
+        return history;
     }
 
     @Override
@@ -301,12 +352,14 @@ public class InMemoryTaskManager implements TaskManager {
         for (Task epic : epics) {
             if (id == epic.getSuperId()) {
                 historyManager.remove(epic);
+                priorityHistory.remove(epic);
                 return;
             }
         }
         for (Task subtask : subtasks) {
             if (id == subtask.getSuperId()) {
                 historyManager.remove(subtask);
+                priorityHistory.remove(subtask);
                 return;
             }
         }
@@ -328,5 +381,23 @@ public class InMemoryTaskManager implements TaskManager {
     protected int getCounter() {
         return this.counter;
     }
-    
+
+    public ArrayList<Task> getPrioritizedTasks() {
+
+        ArrayList<Task> history = new ArrayList<>();
+        ArrayList<Task> historyList = historyManager.getPrioritizedHistory();
+        if(historyList.isEmpty()){
+            System.out.println("История пустая, возвращаю пустое число");
+            return null;
+        }
+        System.out.println("Начало списка приоритетной истории по времени");
+        hrPrintln();
+        for (Task task : historyList) {
+            System.out.println(task);
+            history.add(task);
+        }
+        hrPrintln();
+        System.out.println("Конец списка приоритетной истории по времени\n");
+        return history;
+    }
 }

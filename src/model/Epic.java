@@ -25,6 +25,8 @@ public class Epic extends Task{
                 ", id=" + getSuperId() +
                 ", amountSubtasks=" + amountSubtasks +
                 ", status='" + this.getStatus() + '\'' +
+                ", startTime='" + this.getStartTime() + '\'' +
+                ", duration='" + this.getDuration() + '\'' +
                 '}';
     }
 
@@ -35,6 +37,10 @@ public class Epic extends Task{
     public int getEpicId() {
         return epicId;
     }
+
+    public LocalDateTime getStartTime() { return startTime; }
+
+    public Duration getDuration() { return duration; }
 
     public int getAmountSubtasks() {
         return amountSubtasks;
@@ -47,7 +53,13 @@ public class Epic extends Task{
     public LocalDateTime getEndTime() { return startTime.plus(duration);}
 
     public boolean isTaskCopyTime(Epic task) {
+        if(startTime == null){
+            return false;
+        } else {
+
+        }
         return this.startTime.equals(task.startTime);
     }
+
 
 }

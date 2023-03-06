@@ -1,9 +1,16 @@
 import model.*;
 import service.TaskManager;
 
+import java.time.LocalDateTime;
+
 public class Main {
     public static void main(String[] args) {
-        Epic epic1 = new Epic("Сходить в магазин","Надо купить продуктов");
+        LocalDateTime time1 = LocalDateTime.of(2021,1,1,10,10);
+        LocalDateTime time2 = LocalDateTime.of(2021,1,1,11,10);
+        System.out.println(time1.isAfter(time2));
+
+
+        Epic epic1 = new Epic("Сходить в магазин","Надо купить продуктов", LocalDateTime.of(2023,1,2,1,0),15);
         Subtask subtask1 = new Subtask("Купить молоко", "Стоимость 80 рублей",StatusTask.DONE);
         Subtask subtask2 = new Subtask("Купить яица","Стоимость 100 рублей", StatusTask.DONE);
         Epic epic2 = new Epic("Сделать омлет", "Надо приготовить омлет из продкутов");
@@ -42,6 +49,7 @@ public class Main {
         manager.getTask(4);
         manager.getTask(3);
         manager.getHistory();
+        manager.getPrioritizedTasks();
         System.out.println("После множества повторных вызовов Get^\n");
         manager.removeHistory(4);
         manager.removeHistory(3);

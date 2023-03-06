@@ -1,14 +1,14 @@
 package service;
 
-import model.Epic;
 import model.Node;
 import model.Task;
-import service.HistoryManager;
 
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private CustomLinkedList<Task> history = new CustomLinkedList<>();
+
+
 
     @Override
     public void add(Task task) {
@@ -22,8 +22,10 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     public void setHistory(ArrayList<Task> history) {
         CustomLinkedList<Task> testHistory = new CustomLinkedList<>();
+        TreeSet<Task> historySet = new TreeSet<>(Task::compareTime);
         for(Task task: history){
             testHistory.linkLast(task);
+            historySet.add(task);
         }
         this.history = testHistory;
     }
@@ -32,12 +34,20 @@ public class InMemoryHistoryManager implements HistoryManager {
     public ArrayList<Task> getHistory() {
         return history.getTasks();
     }
+
+    @Override
+    public ArrayList<Task> getPrioritizedHistory(){
+        TreeSet<Task> historyTree = new TreeSet<>(Task::compareTime);
+        historyTree.addAll(history.getTasks());
+        return new ArrayList<>(historyTree);
+    }
 }
 class CustomLinkedList<T extends Task>{ ///////////////////////////////////////////// Свой LinkedList c быстрым находдением через HashMap
     private final Map<Integer,T> history = new HashMap<>();
     private Node<T> first;
     private Node<T> last;
     private int size = 0;
+
 
     public void linkLast(T task){
         if (history.containsKey(task.getSuperId())){
@@ -76,7 +86,7 @@ class CustomLinkedList<T extends Task>{ ////////////////////////////////////////
                 }
             }
         } else {
-            for (Node<T> x = first; x != null; x = x.next) {
+            for (Node<T> x = last; x != null; x = x.prev) {
                 if (o.equals(x.elem)) {
                     removeNode(x);
                 }

@@ -78,7 +78,11 @@ public abstract class Task {
         return false;
     }
 
-
+    public abstract LocalDateTime getStartTime();
+    public int compareTime(Task task){
+        //Убрать проблему тут Придумать как сортировать по null id?
+        return this.getStartTime().compareTo(task.getStartTime());
+    }
 }
 
 
