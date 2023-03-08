@@ -10,9 +10,6 @@ import java.util.*;
 public class InMemoryTaskManager implements TaskManager {
     private ArrayList<Epic> epics = new ArrayList<>();
     private ArrayList<Subtask> subtasks = new ArrayList<>();
-
-    private TreeSet<Task> priorityHistory = new TreeSet<>(Task::compareTime);
-
     private final HistoryManager historyManager = Managers.getDefaultHistory();
     private int counter = 0;
 
@@ -33,9 +30,6 @@ public class InMemoryTaskManager implements TaskManager {
     }
     public void setHistoryManager(ArrayList<Task> historyManager) {
         this.historyManager.setHistory(historyManager);
-    }
-    public void setPriorityHistory(TreeSet<Task> treeSet){
-        priorityHistory = treeSet;
     }
 
     private void hrPrintln() {           //Быстрое создание линий на вывод
@@ -247,7 +241,6 @@ public class InMemoryTaskManager implements TaskManager {
                 epicTwin.add(epic);
             } else {
                 historyManager.remove(epic);
-                priorityHistory.remove(epic);
             }
         }
         for (Subtask subtask : subtasks) {
@@ -255,7 +248,6 @@ public class InMemoryTaskManager implements TaskManager {
                 subtaskTwin.add(subtask);
             } else {
                 historyManager.remove(subtask);
-                priorityHistory.remove(subtask);
             }
         }
         epics = epicTwin;
@@ -352,14 +344,12 @@ public class InMemoryTaskManager implements TaskManager {
         for (Task epic : epics) {
             if (id == epic.getSuperId()) {
                 historyManager.remove(epic);
-                priorityHistory.remove(epic);
                 return;
             }
         }
         for (Task subtask : subtasks) {
             if (id == subtask.getSuperId()) {
                 historyManager.remove(subtask);
-                priorityHistory.remove(subtask);
                 return;
             }
         }
@@ -383,8 +373,6 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public ArrayList<Task> getPrioritizedTasks() {
-
-        ArrayList<Task> history = new ArrayList<>();
         ArrayList<Task> historyList = historyManager.getPrioritizedHistory();
         if(historyList.isEmpty()){
             System.out.println("История пустая, возвращаю пустое число");
@@ -394,10 +382,9 @@ public class InMemoryTaskManager implements TaskManager {
         hrPrintln();
         for (Task task : historyList) {
             System.out.println(task);
-            history.add(task);
         }
         hrPrintln();
         System.out.println("Конец списка приоритетной истории по времени\n");
-        return history;
+        return historyList;
     }
 }

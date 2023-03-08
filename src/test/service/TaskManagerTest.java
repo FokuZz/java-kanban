@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class TaskManagerTest <T extends TaskManager> {
     protected TaskManager manager;
-    protected Epic epic ;
+    protected Epic epic,epic2;
     protected Subtask subtask;
     int lastEpicId;
     ArrayList<Task> emptyArray = new ArrayList<>();
@@ -28,9 +28,14 @@ public abstract class TaskManagerTest <T extends TaskManager> {
     this.manager = getTaskManager();
     this.epic = new Epic("Убраться в квартире","необходимо убрать лишний мусор", LocalDateTime.of(23,1,1,10,0),60);
     this.subtask = new Subtask("Пропылесосить пол","слишком пыльно!", StatusTask.DONE);
+    this.epic2 = new Epic("Сходить в магазин","Надо купить продуктов");
     this.lastEpicId = epic.getSuperId();
     }
-
+    //  a. Со стандартным поведением.
+    //  b. С пустым списком задач.
+    //  c. С неверным идентификатором задачи (пустой и/или несуществующий идентификатор).
+    //
+    // c вариант я исключаю для get методов без параметров, думаю логично
     @Test
     void getAllTasksStandart() {
         manager.createTask(epic);
@@ -58,7 +63,7 @@ public abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    void getByIdStandart() { // Должен выводить всё по groupId
+    void getByIdStandart() {
         manager.createTask(epic);
         manager.createTask(subtask);
         int groupId = epic.getEpicId();
@@ -67,12 +72,12 @@ public abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    void getByIdEmpty() { // Должен выводить всё по groupId
+    void getByIdEmpty() {
         Assertions.assertEquals(emptyArray, manager.getById(lastEpicId));
     }
 
     @Test
-    void getByIdWrong() { // Должен выводить всё по groupId
+    void getByIdWrong() {
         manager.createTask(epic);
         manager.createTask(subtask);
         Assertions.assertEquals(emptyArray, manager.getById(2));
@@ -363,6 +368,27 @@ public abstract class TaskManagerTest <T extends TaskManager> {
         manager.removeHistory(wrongInt);
 
         Assertions.assertEquals(history,manager.getHistory());
+    }
+
+    @Test
+    void getPrioritizedTasksStandart() {
+        manager.createTask(epic);
+        manager.createTask(subtask);
+        manager.createTask(epic2);
+        manager.getEpic(lastEpicId);
+        int lastEpic2Id = lastEpicId + 2;
+        manager.getTask(lastEpic2Id);
+
+        ArrayList<Task> historyExpected = new ArrayList<>(
+                List.of(epic,epic2)
+        );
+
+        Assertions.assertEquals(historyExpected,manager.getPrioritizedTasks());
+    }
+
+    @Test
+    void getPrioritizedTasksEmpty() {
+        Assertions.assertNull(manager.getPrioritizedTasks());
     }
 
 }

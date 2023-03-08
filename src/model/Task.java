@@ -2,6 +2,7 @@ package model;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.Objects;
 
 public abstract class Task {
@@ -79,8 +80,12 @@ public abstract class Task {
     }
 
     public abstract LocalDateTime getStartTime();
+
     public int compareTime(Task task){
-        //Убрать проблему тут Придумать как сортировать по null id?
+        if(task.getStartTime() == null && this.getStartTime() == null) return 0;
+        if(task.getStartTime() == null) return -1;
+        if(this.getStartTime() == null) return 1;
+
         return this.getStartTime().compareTo(task.getStartTime());
     }
 }
