@@ -71,7 +71,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         manager.getHistory();
         manager.getAllTasks();
     }
-    static Path fileName = Paths.get("FileTaskManager.CSV");
+    static final Path fileName = Paths.get("FileTaskManager.CSV");
 
     private void createFile() throws ManagerSaveException {
         if(!Files.exists(fileName)){
