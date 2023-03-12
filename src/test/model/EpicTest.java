@@ -28,7 +28,7 @@ class EpicTest {
     public void emptyListSubtasks() {
 
         manager.updateTask(epic1);
-        Assertions.assertEquals(0,manager.getAllSubtaskEpic(epic1).size());
+        Assertions.assertEquals(0,manager.getAllSubtaskEpic(epic1.getEpicId()).size());
     }
 
     @Test
@@ -38,13 +38,13 @@ class EpicTest {
         Subtask subtask2 = new Subtask("Имя тест сабтаск2","Описание тест сабтаск2", StatusTask.NEW);
         manager.createTask(subtask1);
         manager.createTask(subtask2);
-        ArrayList<Subtask> sub = manager.getAllSubtaskEpic(epic1);
+        ArrayList<Subtask> sub = manager.getAllSubtaskEpic(epic1.getEpicId());
         Assertions.assertEquals(2,sub.size());
         for(Subtask subtask : sub){
             Assertions.assertEquals(StatusTask.NEW,subtask.getStatus());
         }
         manager.updateTask(epic1);
-        sub = manager.getAllSubtaskEpic(epic1);
+        sub = manager.getAllSubtaskEpic(epic1.getEpicId());
         for(Subtask subtask : sub){
             Assertions.assertEquals(StatusTask.IN_PROGRESS,subtask.getStatus());
         }
@@ -57,7 +57,7 @@ class EpicTest {
         Subtask subtask2 = new Subtask("Имя тест сабтаск2","Описание тест сабтаск2", StatusTask.DONE);
         manager.createTask(subtask1);
         manager.createTask(subtask2);
-        ArrayList<Subtask> sub = manager.getAllSubtaskEpic(epic1);
+        ArrayList<Subtask> sub = manager.getAllSubtaskEpic(epic1.getEpicId());
         Assertions.assertEquals(2,sub.size());
         for(Subtask subtask : sub){
             Assertions.assertEquals(StatusTask.DONE,subtask.getStatus());
@@ -71,7 +71,7 @@ class EpicTest {
         Subtask subtask2 = new Subtask("Имя тест сабтаск2","Описание тест сабтаск2", StatusTask.DONE);
         manager.createTask(subtask1);
         manager.createTask(subtask2);
-        ArrayList<Subtask> sub = manager.getAllSubtaskEpic(epic1);
+        ArrayList<Subtask> sub = manager.getAllSubtaskEpic(epic1.getEpicId());
         Assertions.assertEquals(2,sub.size());
         boolean isHasNew = false;
         boolean isHasDone = false;
@@ -94,7 +94,7 @@ class EpicTest {
         Subtask subtask2 = new Subtask("Имя тест сабтаск2","Описание тест сабтаск2", StatusTask.IN_PROGRESS);
         manager.createTask(subtask1);
         manager.createTask(subtask2);
-        ArrayList<Subtask> sub = manager.getAllSubtaskEpic(epic1);
+        ArrayList<Subtask> sub = manager.getAllSubtaskEpic(epic1.getEpicId());
         Assertions.assertEquals(2,sub.size());
         for(Subtask subtask : sub){
             Assertions.assertEquals(StatusTask.IN_PROGRESS,subtask.getStatus());

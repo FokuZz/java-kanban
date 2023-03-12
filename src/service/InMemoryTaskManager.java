@@ -4,16 +4,15 @@ import model.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private ArrayList<Epic> epics = new ArrayList<>();
     private ArrayList<Subtask> subtasks = new ArrayList<>();
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    private HistoryManager historyManager = Managers.getDefaultHistory();
     private int counter = 0;
 
-    HashMap<LocalDateTime,Boolean> oneYearTimeTask = new HashMap<>();
+    private HashMap<LocalDateTime,Boolean> oneYearTimeTask = new HashMap<>();
 
 
 
@@ -28,8 +27,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void setCounter(int counter) {
         this.counter = counter;
     }
-    public void setHistoryManager(ArrayList<Task> historyManager) {
-        this.historyManager.setHistory(historyManager);
+    public void setHistoryManager(CustomLinkedList<Task> historyManager) {
+        this.historyManager.setHistory(historyManager.getTasks());
     }
 
     private void hrPrintln() {           //Быстрое создание линий на вывод
@@ -64,6 +63,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {          // Удаляет все задачи
+        oneYearTimeTask = new HashMap<>();
         epics.clear();
         subtasks.clear();
         counter = 0;
@@ -94,7 +94,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createTask(@NotNull Task task){
+    public boolean createTask(@NotNull Task task){
         if(oneYearTimeTask.isEmpty()){
             for(LocalDateTime time = LocalDateTime.of(2023,1,1,0,0)
                 ; time.isBefore(LocalDateTime.of(2024,1,1,0,0))
@@ -106,11 +106,11 @@ public class InMemoryTaskManager implements TaskManager {
 
         if(task.getClass().equals(Epic.class)){
             for(Epic epic:epics){
-                if(task.isTaskCopy(epic)) return;
+                if(task.isTaskCopy(epic)) return false;
             }
         } else {
             for(Subtask subtask: subtasks){
-                if(task.isTaskCopy(subtask)) return;
+                if(task.isTaskCopy(subtask)) return false;
             }
         }
 
@@ -126,7 +126,7 @@ public class InMemoryTaskManager implements TaskManager {
                 if (oneYearTimeTask.containsKey(time)) {
                     if (oneYearTimeTask.get(time)) {
                         System.out.println("Время выполнение задачи, пересекается с другим епиком\nСоздания не произошло \n");
-                        return;
+                        return false;
                     } else {
                         while(time.isBefore(((Epic) task).getEndTime())){
                             oneYearTimeTask.put(time,true);
@@ -144,9 +144,12 @@ public class InMemoryTaskManager implements TaskManager {
             sub.setStartTime(epics.get(epics.size() - 1).getStartTime());
             sub.setDuration(epics.get(epics.size() - 1).getDuration());
             subtasks.add((Subtask) task);
+            return true;
         } else {
             System.out.println("Создания не произошло\n");
+            return false;
         }
+        return false;
     }
 
     @Override
@@ -233,30 +236,50 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteEpicOrSubtask(int superId) {
+    public boolean deleteEpicOrSubtask(int superId) {
         ArrayList<Epic> epicTwin = new ArrayList<>();
         ArrayList<Subtask> subtaskTwin = new ArrayList<>();
+        boolean isRemoveHasBeen = false;
         for (Epic epic : epics) {
             if (epic.getSuperId() != superId) {
                 epicTwin.add(epic);
             } else {
+                isRemoveHasBeen = true;
                 historyManager.remove(epic);
+                LocalDateTime time = epic.getStartTime();
+                while(time.isBefore(epic.getEndTime())){
+                    oneYearTimeTask.put(time,false);
+                    time = time.plusMinutes(15);
+                }
             }
         }
         for (Subtask subtask : subtasks) {
             if (subtask.getSuperId() != superId) {
                 subtaskTwin.add(subtask);
             } else {
+                isRemoveHasBeen = true;
                 historyManager.remove(subtask);
             }
         }
         epics = epicTwin;
         subtasks = subtaskTwin;
+        return isRemoveHasBeen;
     }
 
     @Override
-    public ArrayList<Subtask> getAllSubtaskEpic(@NotNull Epic epic) {   //Выводит все сабтаски заданного епика
+    public ArrayList<Subtask> getAllSubtaskEpic(@NotNull int groupId) {   //Выводит все сабтаски заданного епика
         ArrayList<Subtask> sub = new ArrayList<>();
+        Epic epic = null;
+        for(Epic o: epics){
+            if(groupId == o.getEpicId()){
+                epic=o;
+                break;
+            }
+        }
+        if(epic == null) {
+            System.out.println("По данному GroupId = "+groupId+", ничего не найдено\nВозвращаю пустое значение");
+            return null;
+        }
         System.out.println("Начало подсписков задачи " + epic.getName());
         hrPrintln();
         for (Subtask subtask : subtasks) {
@@ -386,5 +409,11 @@ public class InMemoryTaskManager implements TaskManager {
         hrPrintln();
         System.out.println("Конец списка приоритетной истории по времени\n");
         return historyList;
+    }
+
+    @Override
+    public void removeAllHistory() {
+        oneYearTimeTask = new HashMap<>();
+        historyManager = Managers.getDefaultHistory();
     }
 }

@@ -38,6 +38,8 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public ArrayList<Task> getPrioritizedHistory(){
+        prioritizedHistory = history.getTasks();
+        Collections.sort(prioritizedHistory,Task::compareTime);
         return prioritizedHistory;
     }
 }
