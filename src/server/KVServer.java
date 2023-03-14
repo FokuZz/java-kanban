@@ -21,9 +21,13 @@ public class KVServer {
     private final HttpServer server;
     private final Map<String, String> data = new HashMap<>();
 
-    public KVServer() throws IOException {
+    public KVServer(){
         apiToken = generateApiToken();
-        server = HttpServer.create(new InetSocketAddress(PORT), 0);
+        try {
+            server = HttpServer.create(new InetSocketAddress(PORT), 0);
+        } catch (IOException e) {
+            throw new RuntimeException("Ошибка при создании сервера");
+        }
         server.createContext("/register", this::register);
         server.createContext("/save", this::save);
         server.createContext("/load", this::load);
