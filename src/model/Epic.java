@@ -3,15 +3,18 @@ package model;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-public class Epic extends Task{
+public class Epic extends Task {
     private int epicId;
     private int amountSubtasks;
     private LocalDateTime startTime;
     private Duration duration;
-    public Epic(String name, String description) { super(name, description); }
 
-    public Epic(String name, String description, LocalDateTime startTime, int durationInMinutes){
-        super(name,description);
+    public Epic(String name, String description) {
+        super(name, description);
+    }
+
+    public Epic(String name, String description, LocalDateTime startTime, int durationInMinutes) {
+        super(name, description);
         this.startTime = startTime;
         this.duration = Duration.ofMinutes(durationInMinutes);
     }
@@ -38,9 +41,13 @@ public class Epic extends Task{
         return epicId;
     }
 
-    public LocalDateTime getStartTime() { return startTime; }
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
 
-    public Duration getDuration() { return duration; }
+    public Duration getDuration() {
+        return duration;
+    }
 
     public int getAmountSubtasks() {
         return amountSubtasks;
@@ -50,10 +57,12 @@ public class Epic extends Task{
         this.amountSubtasks++;
     }
 
-    public LocalDateTime getEndTime() { return startTime.plus(duration);}
+    public LocalDateTime getEndTime() {
+        return startTime.plus(duration);
+    }
 
     public boolean isTaskCopyTime(Epic task) {
-        if(startTime == null){
+        if (startTime == null) {
             return false;
         } else {
 

@@ -8,6 +8,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CustomLinkedList<T extends Task> { ///////////////////////////////////////////// Свой LinkedList c быстрым находдением через HashMap
+
+    public CustomLinkedList() {
+    }
+
+    public CustomLinkedList(ArrayList<T> testHistory) {
+        for (int i = testHistory.size() - 1; i >= 0; i--) {
+            linkLast(testHistory.get(i));
+        }
+    }
+
     private final Map<Integer, T> history = new HashMap<>();
     private Node<T> first;
     private Node<T> last;

@@ -19,7 +19,7 @@ class EpicTest {
 
     @BeforeEach
     public void createManagerAndEpic(){
-        manager = Managers.getDefault();
+        manager = Managers.getInMemoryManager();
         epic1 = new Epic("Имя тест епика1","Описание тест епика1");
         manager.createTask(epic1);
     }
@@ -41,7 +41,7 @@ class EpicTest {
         ArrayList<Subtask> sub = manager.getAllSubtaskEpic(epic1.getEpicId());
         Assertions.assertEquals(2,sub.size());
         for(Subtask subtask : sub){
-            Assertions.assertEquals(StatusTask.NEW,subtask.getStatus());
+            Assertions.assertEquals(StatusTask.IN_PROGRESS,subtask.getStatus());
         }
         manager.updateTask(epic1);
         sub = manager.getAllSubtaskEpic(epic1.getEpicId());
@@ -77,12 +77,12 @@ class EpicTest {
         boolean isHasDone = false;
         for(Subtask subtask : sub){
             if(subtask.getStatus() == StatusTask.NEW){
-               isHasNew = true;
+               isHasNew = false;
            } else if(subtask.getStatus() == StatusTask.DONE){
                 isHasDone = true;
             }
         }
-        Assertions.assertTrue(isHasNew);
+        Assertions.assertFalse(isHasNew);
         Assertions.assertTrue(isHasDone);
         }
 

@@ -13,15 +13,17 @@ public abstract class Task {
     private StatusTask status = StatusTask.NEW;
 
 
-    Task(String name, String description){
+    Task(String name, String description) {
         this.name = name;
         this.description = description;
         this.id = sumTasks++;
     }
 
+    public void minusSumTasks() {
+        sumTasks--;
+    }
 
-
-    public Integer getSuperId(){
+    public Integer getSuperId() {
         return id;
     }
 
@@ -72,8 +74,8 @@ public abstract class Task {
         return Objects.hash(name, id, description, status);
     }
 
-    public boolean isTaskCopy(Task task){
-        if(this.getName().equals(task.getName()) && this.getDescription().equals(task.getDescription())){
+    public boolean isTaskCopy(Task task) {
+        if (this.getName().equals(task.getName()) && this.getDescription().equals(task.getDescription())) {
             return true;
         }
         return false;
@@ -81,10 +83,10 @@ public abstract class Task {
 
     public abstract LocalDateTime getStartTime();
 
-    public int compareTime(Task task){
-        if(task.getStartTime() == null && this.getStartTime() == null) return 0;
-        if(task.getStartTime() == null) return -1;
-        if(this.getStartTime() == null) return 1;
+    public int compareTime(Task task) {
+        if (task.getStartTime() == null && this.getStartTime() == null) return 0;
+        if (task.getStartTime() == null) return -1;
+        if (this.getStartTime() == null) return 1;
 
         return this.getStartTime().compareTo(task.getStartTime());
     }

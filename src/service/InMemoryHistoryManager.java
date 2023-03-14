@@ -14,18 +14,18 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void add(Task task) {
         history.linkLast(task);
         prioritizedHistory = history.getTasks(); // Беру уникальную коллекцию, чтобы отсортировать
-        Collections.sort(prioritizedHistory,Task::compareTime);
+        Collections.sort(prioritizedHistory, Task::compareTime);
     }
 
     @Override
-    public void remove(Task task){
+    public void remove(Task task) {
         history.remove(task);
         prioritizedHistory.remove(task);
     }
 
     public void setHistory(ArrayList<Task> history) {
         CustomLinkedList<Task> testHistory = new CustomLinkedList<>();
-        for(int i = history.size() - 1; i >= 0  ; i--){
+        for (int i = history.size() - 1; i >= 0; i--) {
             testHistory.linkLast(history.get(i));
         }
         this.history = testHistory;
@@ -37,9 +37,9 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public ArrayList<Task> getPrioritizedHistory(){
+    public ArrayList<Task> getPrioritizedHistory() {
         prioritizedHistory = history.getTasks();
-        Collections.sort(prioritizedHistory,Task::compareTime);
+        Collections.sort(prioritizedHistory, Task::compareTime);
         return prioritizedHistory;
     }
 }

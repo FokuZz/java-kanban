@@ -1,30 +1,25 @@
 package test.service;
 
+import model.Managers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import service.FileBackedTasksManager;
-import service.InMemoryTaskManager;
-import service.exceptions.ManagerSaveException;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>{
     static String fileName = "FileTaskManager.CSV";
     @Override
     FileBackedTasksManager getTaskManager(){
-        return new FileBackedTasksManager();
+//        return new FileBackedTasksManager();
+        return Managers.getFileManager();
     }
 
     @Test
     void saveEmptyListTaskAndEmptyHistory() {
-        ((FileBackedTasksManager)manager).saveToFile();
+        ((FileBackedTasksManager)manager).save();
         String file = null;
         try {
             file = readFile(fileName);
@@ -37,8 +32,8 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
 
     @Test
     void saveOnlyOneEpic() {
-        manager.createTask(epic);
-        ((FileBackedTasksManager)manager).saveToFile();
+        manager.createTask(epic1);
+        ((FileBackedTasksManager)manager).save();
         String file = null;
         try {
             file = readFile(fileName);
@@ -68,4 +63,5 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
             reader.close();
         }
     }
+
 }
