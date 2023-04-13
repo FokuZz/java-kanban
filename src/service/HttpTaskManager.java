@@ -1,18 +1,15 @@
 package service;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import model.*;
 import client.KVTaskClient;
-import server.HttpTaskServer;
+import com.google.gson.Gson;
+import model.Epic;
+import model.HttpLoadHelper;
+import model.Subtask;
+import model.Task;
 import service.exceptions.ManagerSaveException;
 
-import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class HttpTaskManager extends FileBackedTasksManager {
     private static KVTaskClient client = null;

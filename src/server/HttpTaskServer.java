@@ -2,12 +2,13 @@ package server;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.sun.net.httpserver.HttpServer;
-import model.*;
-import service.FileBackedTasksManager;
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
+import model.Epic;
+import model.StatusTask;
+import model.Subtask;
+import model.Task;
 import service.HttpTaskManager;
 
 import java.io.IOException;
@@ -17,7 +18,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 public class HttpTaskServer {
     static Gson gson = new Gson();
@@ -33,9 +36,6 @@ public class HttpTaskServer {
         fileManager = new HttpTaskManager("http://localhost:8888");
         server = HttpServer.create(new InetSocketAddress(port), 0);
         server.createContext("/tasks", new TaskHandler());
-
-        // Я уже понял как можно было лучше и проще сделать, и сейчас смотрю на свою реализацию и думаю
-        // жесть я псих
     }
     public int getFirstEpicId(){
         if(!fileManager.getEpics().isEmpty()){
@@ -76,11 +76,8 @@ public class HttpTaskServer {
                         List.of(
                                 exchange.getRequestURI().getRawQuery().split("id=")
                         ).get(1)
-                ); //Делю всё что выходит за ? на id=, запихиваю в лист и сразу забираю число которое написал
-            }  // Обработка параметра строки запроса
-            // Либо я дурак, либо ничего не сказали как обрабатывать параметр строки от, клиент запроса
-            // Если располагаете информацией, можете-пожалуйста написать как лучше было бы, и проще это сделать
-            // (всё это говорю, так-как ощущение, что сделал всё на костылях, а не нормальным путём)
+                );
+            }
 
             if (exchange.getRequestMethod().equals("GET")) {
 
@@ -181,12 +178,7 @@ public class HttpTaskServer {
                     System.out.println("Зашёл в POST");
                     if (body.contains("date")) {
                         for (String text : body.split(",")) {
-                            try {               // Сейчас пересматриваю код и хочу тут пояснить что я сделал
-                                // Этот франкенштейн когда видит что в body есть параметр StartTime берёт
-                                // и вручную форматирует стринг дабы потом всё удобно можно было изьять
-                                // из мапы сразу в формат времени, сейчас когда я уже прошёл через пытки
-                                // с gson я бы сделал через него, но в целом тоже приколдесно получилось
-
+                            try {
                                 if (text.contains("startTime")) putInHashLDT("year", text);
                                 if (text.contains("month")) putInHashLDT("month", text);
                                 if (text.contains("day")) putInHashLDT("day", text);
@@ -218,8 +210,7 @@ public class HttpTaskServer {
                                     .replaceAll("\\{", "").trim().split(":");
 
                             hashBody.put(forHashmap[0], forHashmap[1]);
-                        } // Честно я думаю это лучшее решение, чтобы создавать новые таски, во-первых, по типу, во-вторых, по
-                        // логике конструктора
+                        }
                     }
                     Task task = null;
                     try {
@@ -332,7 +323,7 @@ public class HttpTaskServer {
 
                 if (secondPath.equals("task") && arrPath.length == 3) {
                     fileManager.deleteAllTasks();
-                    fileManager.removeAllHistory();
+                    fileManager.clearHistory();
                     System.out.println("/tasks/task/");
                     writeResponse(exchange, "Удаление всего списка произошло успешно", 200);
                     return;

@@ -1,7 +1,0 @@
-type,name,description,groupid,id,status,startTime,duration
-Epic,Убраться в квартире,необходимо убрать лишний мусор,0,238,DONE,0023-01-01T10:00,PT0S
-Subtask,Пропылесосить пол,слишком пыльно!,0,239,DONE,0023-01-01T10:00,PT0S
-
-history empty
-
-priority history empty

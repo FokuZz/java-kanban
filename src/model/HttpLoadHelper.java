@@ -2,7 +2,6 @@ package model;
 
 import service.HistoryManager;
 import service.InMemoryHistoryManager;
-import service.InMemoryTaskManager;
 
 import java.util.ArrayList;
 

@@ -36,6 +36,6 @@ public interface TaskManager {
 
     void removeHistory(int superId);
 
-    void removeAllHistory();
+    void clearHistory();
     ArrayList<Task> getPrioritizedTasks();
 }

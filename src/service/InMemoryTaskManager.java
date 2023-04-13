@@ -4,7 +4,8 @@ import model.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class InMemoryTaskManager implements TaskManager {
     private ArrayList<Epic> epics = new ArrayList<>();
@@ -445,7 +446,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void removeAllHistory() {
+    public void clearHistory() {
         oneYearTimeTask = new HashMap<>();
         historyManager = Managers.getDefaultHistory();
     }

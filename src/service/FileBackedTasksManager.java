@@ -1,5 +1,9 @@
 package service;
 
+import model.*;
+import org.jetbrains.annotations.NotNull;
+import service.exceptions.ManagerSaveException;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -9,10 +13,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import model.*;
-import org.jetbrains.annotations.NotNull;
-import service.exceptions.ManagerSaveException;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     public FileBackedTasksManager() {

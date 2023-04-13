@@ -23,33 +23,37 @@ public abstract class model.Task {
 От него у нас будет создан классы наследователи __Epic__ и __Subtask__
 
 ---
-## Менеджер трекера "InMemoryTaskManager"
-Он будет запускаться на старте программы и управлять всеми задачами.
+## Менеджеры "HttpTaskManager" -> "FileBackedTaskManager" -> "InMemoryHistoryManager"
+Каждый из менеджеров наследует от своего предшественника, за счёт которого сохраняет данные
+в указанном типе
 
-Для управления задачами используются данные публичные методы:
+У каждого типа 
 ```
-getAllTasks()    // Выводит эпики и их сабтаски если у них один айди
+getAllTasks()      // Выводит список всех задач, по группам из Epic и его Сабтаскам
 
-deleteAllTasks()    // Удаляет все задачи
+getById(int id)     // Выводит Task по его айди
 
-getById(int id)    // Выводит эпики и их сабтаски по заданному айди
+createTask(Task task)    // Добавляет в менеджер класс
 
-createTask(model.Task task)    //  Общий метод для 2х массивов Epics и Subtasks
+updateTask(Task task)    // Обновляет Task если в списке есть то же имя и описание
 
-updateTask(model.Task task)    // Обновляет статус задачи
+deleteAllTasks()        // Удаляет все Task
 
-deleteAllById(int id), deleteEpicById(int id), deleteSubtaskById(int id)   // Удаляет епики и сабтаски по id
+deleteSubtaskById(int id),      // Удаляет Subtask
+deleteEpicById(int epicId),     // Удаляет Epic с его Subtask
+deleteEpicOrSubtask(int id)     // Удаляет наследуемые от Task обьекты
 
-getAllSubtaskEpic(model.Epic epic)    //Выводит все сабтаски заданного епика
-```
-## Менеджер истории "InMemoryHistoryManager"
-Он будет запускаться на старте программы и управлять всеми задачами.
+getAllSubtaskEpic(int groupId)  // Выводит все Subtask конкретного Epic
 
-Для управления задачами используются данные публичные методы:
-```
-add(Task task)    // Добавляет в список просмотренный класс
+getTask(int id), getSubtask(int id), getEpic(int id) // Методы get для вывода
 
 getHistory()    // Возвращает список истории 
 
+removeHistory(int superId)  // Удаляет конкретный Task в истории
+
+clearHistory()  // Очищает историю
+
+getPrioritizedTasks()   // Получает список сортированый по времени, все элементы без времени уходят в конец списка
+
 ```
-Спасибо за просмотр реадми
+Спасибо за просмотр

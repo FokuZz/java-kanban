@@ -3,7 +3,8 @@ package service;
 import model.CustomLinkedList;
 import model.Task;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private CustomLinkedList<Task> history = new CustomLinkedList<>();

@@ -1,49 +1,25 @@
 package test.service;
 
-import com.google.gson.*;
-import model.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import model.Epic;
+import model.StatusTask;
+import model.Subtask;
+import model.Task;
 import org.junit.jupiter.api.*;
 import server.HttpTaskServer;
 import server.KVServer;
-import service.FileBackedTasksManager;
-import service.HistoryManager;
-import service.HttpTaskManager;
-import service.TaskManager;
-import service.exceptions.ManagerSaveException;
-import com.google.gson.internal.reflect.ReflectionHelper;
+
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class HttpTaskManagerTest {
-
-
-    //WARNING: An illegal reflective access operation has occurred
-    //WARNING: Illegal reflective access by com.google.gson.internal.reflect.ReflectionHelper (file://////java-kanban/lib/gson-2.9.0.jar) to field java.time.LocalDateTime.date
-    //WARNING: Please consider reporting this to the maintainers of com.google.gson.internal.reflect.ReflectionHelper
-    //WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
-    //WARNING: All illegal access operations will be denied in a future release
-    //
-    // Надоела эта штука, пытался найти как её убрать, но ничего не поолучилось
-    // да, я умею читать но я не знаю куда писать --illegal-ac...
-
-    //Если не ошибаюсь это последнее тз по этому тренажёру, я конечно очень рад но это крутой опыт вот так прогрессировать
-    // и потом уже понимать что ты мог сделать всё по другом совсем, в целом при необходимости я бы так и сделал
-    // но я лишь хочу сделать тз, особенно сейчас сдавая его уже в просрок, чисто последние 2 дня я безвылазно и
-    // максимальным сеансом в 20 часов сидел и делал это проклятое тз разбираясь с gson и
-    // проклиная что нас не научили нормально его обрабатывать, до сих пор я толком нормально не разобрался но
-    // всё же прогресс есть, спасибо вам что смотрите ревью, думаю это тоже очень
-    // полезный навык сходу понимать что и где. Всех благ вам!
     static final int PORT = 8088;
      URI uri = URI.create("http://localhost:");
      Gson gson = new Gson();

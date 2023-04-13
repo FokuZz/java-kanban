@@ -1,6 +1,9 @@
 package test.service;
 
-import model.*;
+import model.Epic;
+import model.StatusTask;
+import model.Subtask;
+import model.Task;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

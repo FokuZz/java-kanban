@@ -11,8 +11,6 @@ import service.TaskManager;
 
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class EpicTest {
     Epic epic1;
     TaskManager manager;
